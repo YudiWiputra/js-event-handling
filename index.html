@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Handling - JavaScript Demo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Scroll Progress Indicator -->
+  <div class="scroll-indicator" id="scroll-indicator"></div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <div class="toast-title">Notifikasi</div>
+    <div class="toast-message">Pesan</div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <h1>📘 JavaScript Event Handling</h1>
+    <p>Demonstrasi Lengkap Semua Jenis Event di JavaScript — Kelas XI</p>
+  </header>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#section-inline">Inline</a>
+    <a href="#section-property">Property</a>
+    <a href="#section-addevent">addEventListener</a>
+    <a href="#section-mouse">Mouse</a>
+    <a href="#section-keyboard">Keyboard</a>
+    <a href="#section-form">Form</a>
+    <a href="#section-window">Window</a>
+    <a href="#section-media">Media</a>
+    <a href="#section-touch">Touch</a>
+    <a href="#section-dragdrop">Drag & Drop</a>
+  </nav>
+
+  <div class="container">
+
+    <!-- ==========================================
+         1. INLINE EVENT HANDLING
+    =========================================== -->
+    <section class="section" id="section-inline">
+      <h2>1. Inline Event Handling <span class="badge">Dasar</span></h2>
+      <p class="description">
+        Event handler ditulis langsung di atribut HTML. Cara paling sederhana, namun <strong>tidak disarankan</strong>
+        untuk proyek besar karena mencampurkan HTML dan JavaScript.
+      </p>
+
+      <!-- Contoh kode HTML -->
+      <div class="code-tab-container">
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchTab(this, 'inline-html')">HTML</button>
+          <button class="code-tab" onclick="switchTab(this, 'inline-js')">JavaScript</button>
+        </div>
+        <div class="code-panel active" id="inline-html">
+<pre class="code-block"><span class="comment">&lt;!-- Cara 1: Langsung tulis kode di atribut --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">onclick</span>=<span class="string">"alert('Halo!')"</span><span class="tag">&gt;</span>Klik<span class="tag">&lt;/button&gt;</span>
+
+<span class="comment">&lt;!-- Cara 2: Panggil fungsi yang sudah dibuat --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">onclick</span>=<span class="string">"inlineClick()"</span><span class="tag">&gt;</span>Klik Saya<span class="tag">&lt;/button&gt;</span>
+
+<span class="comment">&lt;!-- Cara 3: Kirim elemen dengan 'this' --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">onmouseover</span>=<span class="string">"inlineMouseOver(this)"</span>
+     <span class="attr">onmouseout</span>=<span class="string">"inlineMouseOut(this)"</span><span class="tag">&gt;</span>
+  Hover di sini
+<span class="tag">&lt;/div&gt;</span></pre>
+        </div>
+        <div class="code-panel" id="inline-js">
+<pre class="code-block"><span class="comment">// Fungsi yang dipanggil dari atribut HTML</span>
+<span class="keyword">function</span> <span class="function">inlineClick</span>() {
+  <span class="function">alert</span>(<span class="string">'Tombol diklik via inline handler!'</span>);
+}
+
+<span class="comment">// Parameter 'element' menerima 'this' dari HTML</span>
+<span class="keyword">function</span> <span class="function">inlineMouseOver</span>(element) {
+  element.style.<span class="attr">boxShadow</span> = <span class="string">'0 0 20px rgba(91,91,247,0.6)'</span>;
+}
+
+<span class="keyword">function</span> <span class="function">inlineMouseOut</span>(element) {
+  element.style.<span class="attr">boxShadow</span> = <span class="string">'none'</span>;
+}</pre>
+        </div>
+      </div>
+
+      <h3>🔹 Demo</h3>
+
+      <!-- INLINE: onclick langsung di atribut HTML -->
+      <button class="btn btn-primary" onclick="inlineClick()">
+        🖱️ Klik Saya (Inline onclick)
+      </button>
+
+      <!-- INLINE: onmouseover & onmouseout -->
+      <div class="mouse-area" style="height:80px; margin-top:12px;"
+           onmouseover="inlineMouseOver(this)"
+           onmouseout="inlineMouseOut(this)">
+        Arahkan mouse ke sini (Inline onmouseover/onmouseout)
+      </div>
+
+      <button class="btn-clear" onclick="clearLog('log-inline')">Hapus Log</button>
+      <div class="log-box" id="log-inline"></div>
+    </section>
+
+
+    <!-- ==========================================
+         2. EVENT HANDLER PROPERTIES
+    =========================================== -->
+    <section class="section" id="section-property">
+      <h2>2. Event Handler Properties <span class="badge">Menengah</span></h2>
+      <p class="description">
+        Handler ditetapkan via properti DOM element, misal <code>element.onclick = function() {...}</code>.
+        Lebih rapi dari inline, tapi hanya bisa <strong>satu handler per event</strong>.
+      </p>
+
+      <div class="code-tab-container">
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchTab(this, 'prop-js')">JavaScript</button>
+        </div>
+        <div class="code-panel active" id="prop-js">
+<pre class="code-block"><span class="comment">// Ambil elemen dari DOM</span>
+<span class="keyword">const</span> btn = document.<span class="function">getElementById</span>(<span class="string">'btn-property'</span>);
+<span class="keyword">const</span> area = document.<span class="function">getElementById</span>(<span class="string">'property-area'</span>);
+
+<span class="comment">// Set handler via properti onclick</span>
+btn.<span class="attr">onclick</span> = <span class="keyword">function</span>() {
+  <span class="function">alert</span>(<span class="string">'Diklik via property!'</span>);
+};
+
+<span class="comment">// Set handler via properti onmouseover & onmouseout</span>
+area.<span class="attr">onmouseover</span> = <span class="keyword">function</span>() {
+  <span class="keyword">this</span>.style.<span class="attr">borderColor</span> = <span class="string">'#00ff88'</span>;
+  <span class="keyword">this</span>.<span class="attr">textContent</span> = <span class="string">'Mouse ada di dalam!'</span>;
+};
+
+area.<span class="attr">onmouseout</span> = <span class="keyword">function</span>() {
+  <span class="keyword">this</span>.style.<span class="attr">borderColor</span> = <span class="string">'#5b5bf7'</span>;
+  <span class="keyword">this</span>.<span class="attr">textContent</span> = <span class="string">'Arahkan mouse ke sini'</span>;
+};
+
+<span class="comment">// ⚠️ HATI-HATI: Properti hanya bisa 1 handler!</span>
+<span class="comment">// Jika di-assign ulang, handler sebelumnya HILANG:</span>
+btn.<span class="attr">onclick</span> = <span class="keyword">function</span>() {
+  <span class="function">alert</span>(<span class="string">'Handler baru — yang lama sudah tergantikan!'</span>);
+};</pre>
+        </div>
+      </div>
+
+      <h3>🔹 Demo</h3>
+
+      <button class="btn btn-success" id="btn-property">
+        🖱️ Klik Saya (Property Handler)
+      </button>
+
+      <div class="mouse-area" id="property-area" style="height:80px; margin-top:12px;">
+        Arahkan mouse ke sini (Property Handler)
+      </div>
+
+      <button class="btn-clear" onclick="clearLog('log-property')">Hapus Log</button>
+      <div class="log-box" id="log-property"></div>
+    </section>
+
+
+    <!-- ==========================================
+         3. addEventListener METHOD
+    =========================================== -->
+    <section class="section" id="section-addevent">
+      <h2>3. addEventListener() Method <span class="badge">Direkomendasikan</span></h2>
+      <p class="description">
+        Cara terbaik dan paling fleksibel. Bisa menambahkan <strong>banyak listener</strong> untuk satu event,
+        mendukung opsi <code>once</code>, <code>capture</code>, dll.
+      </p>
+
+      <div class="code-tab-container">
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchTab(this, 'addevent-js')">JavaScript</button>
+        </div>
+        <div class="code-panel active" id="addevent-js">
+<pre class="code-block"><span class="keyword">const</span> btn = document.<span class="function">getElementById</span>(<span class="string">'myBtn'</span>);
+
+<span class="comment">// ✅ Bisa pasang BANYAK listener pada 1 event</span>
+btn.<span class="function">addEventListener</span>(<span class="string">'click'</span>, <span class="keyword">function</span>() {
+  console.<span class="function">log</span>(<span class="string">'Handler 1 jalan!'</span>);
+});
+
+btn.<span class="function">addEventListener</span>(<span class="string">'click'</span>, <span class="keyword">function</span>() {
+  console.<span class="function">log</span>(<span class="string">'Handler 2 juga jalan!'</span>);
+});
+
+<span class="comment">// ✅ Opsi once: listener otomatis dihapus setelah 1x</span>
+btn.<span class="function">addEventListener</span>(<span class="string">'click'</span>, handleOnce, { <span class="attr">once</span>: <span class="keyword">true</span> });
+
+<span class="comment">// ✅ Bisa hapus listener yang sudah terdaftar</span>
+<span class="keyword">function</span> <span class="function">myHandler</span>() { console.<span class="function">log</span>(<span class="string">'Hello'</span>); }
+btn.<span class="function">addEventListener</span>(<span class="string">'click'</span>, myHandler);
+btn.<span class="function">removeEventListener</span>(<span class="string">'click'</span>, myHandler);</pre>
+        </div>
+      </div>
+
+      <h3>🔹 Demo</h3>
+
+      <button class="btn btn-info" id="btn-addevent">
+        🖱️ Klik (2 Listener Sekaligus)
+      </button>
+
+      <button class="btn btn-warning" id="btn-addevent2">
+        ⚡ Klik (Once — Hanya Sekali)
+      </button>
+
+      <button class="btn-clear" onclick="clearLog('log-addevent')">Hapus Log</button>
+      <div class="log-box" id="log-addevent"></div>
+    </section>
+
+
+    <!-- ==========================================
+         4. MOUSE EVENTS
+    =========================================== -->
+    <section class="section" id="section-mouse">
+      <h2>4. Mouse Events <span class="badge">Interaktif</span></h2>
+      <p class="description">
+        Semua event terkait mouse: <code>click</code>, <code>dblclick</code>, <code>mouseover</code>,
+        <code>mouseout</code>, <code>mousedown</code>, <code>mouseup</code>, <code>mousemove</code>,
+        dan <code>contextmenu</code>.
+      </p>
+
+      <div class="code-tab-container">
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchTab(this, 'mouse-js')">JavaScript</button>
+        </div>
+        <div class="code-panel active" id="mouse-js">
+<pre class="code-block"><span class="keyword">const</span> area = document.<span class="function">getElementById</span>(<span class="string">'mouse-area'</span>);
+
+<span class="comment">// click — klik biasa (kiri)</span>
+area.<span class="function">addEventListener</span>(<span class="string">'click'</span>, <span class="keyword">function</span>(e) {
+  console.<span class="function">log</span>(<span class="string">`Klik di (${e.offsetX}, ${e.offsetY})`</span>);
+});
+
+<span class="comment">// dblclick — double-click</span>
+area.<span class="function">addEventListener</span>(<span class="string">'dblclick'</span>, <span class="keyword">function</span>(e) {
+  console.<span class="function">log</span>(<span class="string">'Double-click!'</span>);
+});
+
+<span class="comment">// mouseover — mouse masuk elemen</span>
+area.<span class="function">addEventListener</span>(<span class="string">'mouseover'</span>, () => console.<span class="function">log</span>(<span class="string">'Mouse masuk'</span>));
+
+<span class="comment">// mouseout — mouse keluar elemen</span>
+area.<span class="function">addEventListener</span>(<span class="string">'mouseout'</span>, () => console.<span class="function">log</span>(<span class="string">'Mouse keluar'</span>));
+
+<span class="comment">// mousedown — tombol mouse ditekan</span>
+area.<span class="function">addEventListener</span>(<span class="string">'mousedown'</span>, <span class="keyword">function</span>(e) {
+  <span class="keyword">const</span> btns = [<span class="string">'Kiri'</span>, <span class="string">'Tengah'</span>, <span class="string">'Kanan'</span>];
+  console.<span class="function">log</span>(<span class="string">`Tombol ${btns[e.button]} ditekan`</span>);
+});
+
+<span class="comment">// mouseup — tombol mouse dilepas</span>
+area.<span class="function">addEventListener</span>(<span class="string">'mouseup'</span>, () => console.<span class="function">log</span>(<span class="string">'Tombol dilepas'</span>));
+
+<span class="comment">// mousemove — mouse bergerak (sering dipanggil!)</span>
+area.<span class="function">addEventListener</span>(<span class="string">'mousemove'</span>, <span class="keyword">function</span>(e) {
+  tracker.style.<span class="attr">left</span> = e.<span class="attr">offsetX</span> + <span class="string">'px'</span>;
+  tracker.style.<span class="attr">top</span>  = e.<span class="attr">offsetY</span> + <span class="string">'px'</span>;
+});
+
+<span class="comment">// contextmenu — klik kanan, bisa cegah menu default</span>
+area.<span class="function">addEventListener</span>(<span class="string">'contextmenu'</span>, <span class="keyword">function</span>(e) {
+  e.<span class="function">preventDefault</span>();  <span class="comment">// cegah menu klik kanan</span>
+  console.<span class="function">log</span>(<span class="string">'Klik kanan dicegah!'</span>);
+});</pre>
+        </div>
+      </div>
+
+      <h3>🔹 Area Interaktif Mouse</h3>
+      <p style="color:#888; font-size:0.85rem; margin-bottom:10px;">
+        Gerakkan mouse, klik, double-klik, klik kanan, tekan & lepas tombol mouse di area ini.
+      </p>
+
+      <div class="mouse-area" id="mouse-area">
+        <span>🖱️ Gerakkan mouse di sini</span>
+        <div class="mouse-tracker" id="mouse-tracker"></div>
+        <div class="mouse-coords" id="mouse-coords">X: — , Y: —</div>
+      </div>
+
+      <button class="btn-clear" onclick="clearLog('log-mouse')">Hapus Log</button>
+      <div class="log-box" id="log-mouse"></div>
+    </section>
+
+
+    <!-- ==========================================
+         5. KEYBOARD EVENTS
+    =========================================== -->
+    <section class="section" id="section-keyboard">
+      <h2>5. Keyboard Events <span class="badge">Interaktif</span></h2>
+      <p class="description">
+        Event keyboard: <code>keydown</code> (saat tombol ditekan), <code>keyup</code> (saat dilepas),
+        dan <code>keypress</code> (deprecated). Menangkap informasi key, code, dan modifier keys.
+      </p>
+
+      <div class="code-tab-container">
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchTab(this, 'keyboard-js')">JavaScript</button>
+        </div>
+        <div class="code-panel active" id="keyboard-js">
+<pre class="code-block"><span class="keyword">const</span> input = document.<span class="function">getElementById</span>(<span class="string">'keyboard-area'</span>);
+
+<span class="comment">// keydown — dipanggil saat tombol DITEKAN</span>
+input.<span class="function">addEventListener</span>(<span class="string">'keydown'</span>, <span class="keyword">function</span>(e) {
+  console.<span class="function">log</span>(<span class="string">`Key: ${e.key}`</span>);   <span class="comment">// 'a', 'Enter', 'Shift'</span>
+  console.<span class="function">log</span>(<span class="string">`Code: ${e.code}`</span>); <span class="comment">// 'KeyA', 'Enter', 'ShiftLeft'</span>
+
+  <span class="comment">// Cek modifier keys</span>
+  <span class="keyword">if</span> (e.<span class="attr">ctrlKey</span>)  console.<span class="function">log</span>(<span class="string">'Ctrl ditekan'</span>);
+  <span class="keyword">if</span> (e.<span class="attr">shiftKey</span>) console.<span class="function">log</span>(<span class="string">'Shift ditekan'</span>);
+  <span class="keyword">if</span> (e.<span class="attr">altKey</span>)   console.<span class="function">log</span>(<span class="string">'Alt ditekan'</span>);
+
+  <span class="comment">// Contoh: cegah Ctrl+S</span>
+  <span class="keyword">if</span> (e.<span class="attr">ctrlKey</span> && e.<span class="attr">key</span> === <span class="string">'s'</span>) {
+    e.<span class="function">preventDefault</span>();
+    console.<span class="function">log</span>(<span class="string">'Ctrl+S dicegah!'</span>);
+  }
+});
+
+<span class="comment">// keyup — dipanggil saat tombol DILEPAS</span>
+input.<span class="function">addEventListener</span>(<span class="string">'keyup'</span>, <span class="keyword">function</span>(e) {
+  console.<span class="function">log</span>(<span class="string">`Tombol ${e.key} dilepas`</span>);
+});</pre>
+        </div>
+      </div>
+
+      <h3>🔹 Klik area di bawah, lalu tekan tombol keyboard apapun</h3>
+
+      <div class="keyboard-area" id="keyboard-area" tabindex="0">
+        <div class="key-display" id="key-display">⌨️</div>
+        <div class="key-info">
+          <span>Code: <strong id="key-code">—</strong></span>
+          <span>Key: <strong id="key-key">—</strong></span>
+          <span>Event: <strong id="key-type">—</strong></span>
+          <span>Modifier: <strong id="key-modifiers">—</strong></span>
+        </div>
+      </div>
+
+      <button class="btn-clear" onclick="clearLog('log-keyboard')">Hapus Log</button>
+      <div class="log-box" id="log-keyboard"></div>
+    </section>
+
+
+    <!-- ==========================================
+         6. FORM EVENTS
+    =========================================== -->
+    <section class="section" id="section-form">
+      <h2>6. Form Events <span class="badge">Penting</span></h2>
+      <p class="description">
+        Event pada form: <code>submit</code>, <code>reset</code>, <code>focus</code>, <code>blur</code>,
+        <code>input</code> (real-time), dan <code>change</code> (setelah selesai).
+      </p>
+
+      <div class="code-tab-container">
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchTab(this, 'form-js')">JavaScript</button>
+        </div>
+        <div class="code-panel active" id="form-js">
+<pre class="code-block"><span class="keyword">const</span> form = document.<span class="function">getElementById</span>(<span class="string">'demo-form'</span>);
+<span class="keyword">const</span> nameInput = document.<span class="function">getElementById</span>(<span class="string">'form-name'</span>);
+<span class="keyword">const</span> selectEl = document.<span class="function">getElementById</span>(<span class="string">'form-select'</span>);
+
+<span class="comment">// submit — saat form disubmit</span>
+form.<span class="function">addEventListener</span>(<span class="string">'submit'</span>, <span class="keyword">function</span>(e) {
+  e.<span class="function">preventDefault</span>();  <span class="comment">// PENTING! Cegah halaman refresh</span>
+  console.<span class="function">log</span>(<span class="string">'Nama:'</span>, nameInput.<span class="attr">value</span>);
+});
+
+<span class="comment">// reset — saat form direset</span>
+form.<span class="function">addEventListener</span>(<span class="string">'reset'</span>, () => console.<span class="function">log</span>(<span class="string">'Form direset!'</span>));
+
+<span class="comment">// focus — saat input mendapat fokus (diklik/tab)</span>
+nameInput.<span class="function">addEventListener</span>(<span class="string">'focus'</span>, () => console.<span class="function">log</span>(<span class="string">'Input difokuskan'</span>));
+
+<span class="comment">// blur — saat input kehilangan fokus</span>
+nameInput.<span class="function">addEventListener</span>(<span class="string">'blur'</span>, () => console.<span class="function">log</span>(<span class="string">'Input blur'</span>));
+
+<span class="comment">// input — setiap kali nilai berubah (real-time)</span>
+nameInput.<span class="function">addEventListener</span>(<span class="string">'input'</span>, <span class="keyword">function</span>() {
+  console.<span class="function">log</span>(<span class="string">'Mengetik:'</span>, <span class="keyword">this</span>.<span class="attr">value</span>);
+});
+
+<span class="comment">// change — SETELAH nilai berubah & kehilangan fokus</span>
+selectEl.<span class="function">addEventListener</span>(<span class="string">'change'</span>, <span class="keyword">function</span>() {
+  console.<span class="function">log</span>(<span class="string">'Pilihan:'</span>, <span class="keyword">this</span>.<span class="attr">value</span>);
+});</pre>
+        </div>
+      </div>
+
+      <h3>🔹 Form Demo</h3>
+
+      <form class="demo-form" id="demo-form">
+        <div class="form-group">
+          <label for="form-name">Nama (coba focus, input, blur)</label>
+          <input type="text" id="form-name" placeholder="Ketik nama Anda...">
+        </div>
+
+        <div class="form-group">
+          <label for="form-email">Email (coba change)</label>
+          <input type="email" id="form-email" placeholder="email@contoh.com">
+        </div>
+
+        <div class="form-group">
+          <label for="form-select">Pilih Kelas (change)</label>
+          <select id="form-select">
+            <option value="">-- Pilih --</option>
+            <option value="xi-1">XI RPL 1</option>
+            <option value="xi-2">XI RPL 2</option>
+            <option value="xi-3">XI TKJ 1</option>
+            <option value="xi-4">XI MM 1</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="form-checkbox"> Setuju dengan syarat & ketentuan
+          </label>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="form-textarea">Komentar (input event)</label>
+          <textarea id="form-textarea" rows="3" placeholder="Tulis komentar..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="reset" class="btn btn-warning">🔄 Reset</button>
+          <button type="submit" class="btn btn-success">📤 Submit</button>
+        </div>
+      </form>
+
+      <button class="btn-clear" onclick="clearLog('log-form')">Hapus Log</button>
+      <div class="log-box" id="log-form"></div>
+    </section>
+
+
+    <!-- ==========================================
+         7. WINDOW EVENTS
+    =========================================== -->
+    <section class="section" id="section-window">
+      <h2>7. Window Events <span class="badge">Global</span></h2>
+      <p class="description">
+        Event pada object <code>window</code>: <code>resize</code>, <code>scroll</code>,
+        <code>online</code>/<code>offline</code>, <code>hashchange</code>, dan <code>load</code>.
+        Scroll indicator di atas halaman juga menggunakan scroll event!
+      </p>
+
+      <div class="code-tab-container">
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchTab(this, 'window-js')">JavaScript</button>
+        </div>
+        <div class="code-panel active" id="window-js">
+<pre class="code-block"><span class="comment">// load — halaman selesai dimuat (semua resource)</span>
+window.<span class="function">addEventListener</span>(<span class="string">'load'</span>, () => {
+  console.<span class="function">log</span>(<span class="string">'Halaman sudah dimuat!'</span>);
+});
+
+<span class="comment">// DOMContentLoaded — DOM siap (tanpa tunggu gambar, dll)</span>
+document.<span class="function">addEventListener</span>(<span class="string">'DOMContentLoaded'</span>, () => {
+  console.<span class="function">log</span>(<span class="string">'DOM siap!'</span>);
+});
+
+<span class="comment">// resize — ukuran window berubah</span>
+window.<span class="function">addEventListener</span>(<span class="string">'resize'</span>, () => {
+  console.<span class="function">log</span>(<span class="string">`Ukuran: ${window.innerWidth}x${window.innerHeight}`</span>);
+});
+
+<span class="comment">// scroll — halaman di-scroll</span>
+window.<span class="function">addEventListener</span>(<span class="string">'scroll'</span>, () => {
+  <span class="keyword">const</span> persen = (window.<span class="attr">scrollY</span> / 
+    (document.documentElement.<span class="attr">scrollHeight</span> - window.<span class="attr">innerHeight</span>)) * <span class="string">100</span>;
+  progressBar.style.<span class="attr">width</span> = persen + <span class="string">'%'</span>;
+});
+
+<span class="comment">// online & offline — koneksi internet</span>
+window.<span class="function">addEventListener</span>(<span class="string">'online'</span>, () => <span class="function">alert</span>(<span class="string">'Kembali online!'</span>));
+window.<span class="function">addEventListener</span>(<span class="string">'offline'</span>, () => <span class="function">alert</span>(<span class="string">'Offline!'</span>));
+
+<span class="comment">// beforeunload — sebelum halaman ditutup</span>
+window.<span class="function">addEventListener</span>(<span class="string">'beforeunload'</span>, <span class="keyword">function</span>(e) {
+  e.<span class="function">preventDefault</span>();
+  e.<span class="attr">returnValue</span> = <span class="string">''</span>; <span class="comment">// Tampilkan dialog konfirmasi</span>
+});</pre>
+        </div>
+      </div>
+
+      <h3>🔹 Informasi Window (Live)</h3>
+      <p style="color:#888; font-size:0.85rem; margin-bottom:12px;">
+        Coba resize browser atau scroll halaman ini untuk melihat perubahan.
+      </p>
+
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="card-label">Lebar Window</div>
+          <div class="card-value" id="win-width">—</div>
+        </div>
+        <div class="info-card">
+          <div class="card-label">Tinggi Window</div>
+          <div class="card-value" id="win-height">—</div>
+        </div>
+        <div class="info-card">
+          <div class="card-label">Scroll Y</div>
+          <div class="card-value" id="win-scrolly">—</div>
+        </div>
+        <div class="info-card">
+          <div class="card-label">Status</div>
+          <div class="card-value" id="win-online">—</div>
+        </div>
+      </div>
+
+      <button class="btn-clear" onclick="clearLog('log-window')">Hapus Log</button>
+      <div class="log-box" id="log-window"></div>
+    </section>
+
+
+    <!-- ==========================================
+         8. MEDIA EVENTS
+    =========================================== -->
+    <section class="section" id="section-media">
+      <h2>8. Media Events <span class="badge">Audio/Video</span></h2>
+      <p class="description">
+        Event pada elemen <code>&lt;audio&gt;</code> dan <code>&lt;video&gt;</code>:
+        <code>play</code>, <code>pause</code>, <code>ended</code>, <code>timeupdate</code>,
+        <code>volumechange</code>, <code>seeking</code>, <code>seeked</code>, <code>loadeddata</code>.
+      </p>
+
+      <div class="code-tab-container">
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchTab(this, 'media-js')">JavaScript</button>
+        </div>
+        <div class="code-panel active" id="media-js">
+<pre class="code-block"><span class="keyword">const</span> audio = document.<span class="function">getElementById</span>(<span class="string">'media-player'</span>);
+
+<span class="comment">// play — media mulai diputar</span>
+audio.<span class="function">addEventListener</span>(<span class="string">'play'</span>, () => console.<span class="function">log</span>(<span class="string">'▶ Playing'</span>));
+
+<span class="comment">// pause — media dijeda</span>
+audio.<span class="function">addEventListener</span>(<span class="string">'pause'</span>, () => console.<span class="function">log</span>(<span class="string">'⏸ Paused'</span>));
+
+<span class="comment">// ended — media selesai diputar</span>
+audio.<span class="function">addEventListener</span>(<span class="string">'ended'</span>, () => console.<span class="function">log</span>(<span class="string">'⏹ Selesai'</span>));
+
+<span class="comment">// timeupdate — posisi waktu berubah (sering!)</span>
+audio.<span class="function">addEventListener</span>(<span class="string">'timeupdate'</span>, <span class="keyword">function</span>() {
+  console.<span class="function">log</span>(<span class="string">`Waktu: ${this.currentTime.toFixed(1)}s`</span>);
+});
+
+<span class="comment">// volumechange — volume berubah</span>
+audio.<span class="function">addEventListener</span>(<span class="string">'volumechange'</span>, <span class="keyword">function</span>() {
+  console.<span class="function">log</span>(<span class="string">`Volume: ${Math.round(this.volume * 100)}%`</span>);
+});
+
+<span class="comment">// loadeddata — data media siap</span>
+audio.<span class="function">addEventListener</span>(<span class="string">'loadeddata'</span>, <span class="keyword">function</span>() {
+  console.<span class="function">log</span>(<span class="string">`Durasi: ${this.duration.toFixed(1)}s`</span>);
+});
+
+<span class="comment">// seeking / seeked — user menggeser timeline</span>
+audio.<span class="function">addEventListener</span>(<span class="string">'seeking'</span>, () => console.<span class="function">log</span>(<span class="string">'Mencari...'</span>));
+audio.<span class="function">addEventListener</span>(<span class="string">'seeked'</span>, () => console.<span class="function">log</span>(<span class="string">'Posisi ditemukan'</span>));</pre>
+        </div>
+      </div>
+
+      <h3>🔹 Audio Player Demo</h3>
+      <p style="color:#888; font-size:0.85rem; margin-bottom:12px;">
+        Gunakan kontrol player untuk memicu berbagai media event.
+      </p>
+
+      <div class="media-player-wrapper">
+        <audio id="media-player" controls>
+          <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+          Browser Anda tidak mendukung element audio.
+        </audio>
+
+        <div class="media-status">
+          <span>Status: <strong id="media-status">⏹ Idle</strong></span>
+          <span>Waktu: <strong id="media-time">0.0s</strong></span>
+          <span>Durasi: <strong id="media-duration">—</strong></span>
+          <span>Volume: <strong id="media-volume">100%</strong></span>
+        </div>
+      </div>
+
+      <button class="btn-clear" onclick="clearLog('log-media')">Hapus Log</button>
+      <div class="log-box" id="log-media"></div>
+    </section>
+
+
+    <!-- ==========================================
+         9. TOUCH EVENTS
+    =========================================== -->
+    <section class="section" id="section-touch">
+      <h2>9. Touch Events <span class="badge">Mobile</span></h2>
+      <p class="description">
+        Event sentuh untuk perangkat mobile: <code>touchstart</code>, <code>touchmove</code>,
+        <code>touchend</code>, dan <code>touchcancel</code>. Di desktop, mouse click akan mensimulasikan sentuhan.
+      </p>
+
+      <div class="code-tab-container">
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchTab(this, 'touch-js')">JavaScript</button>
+        </div>
+        <div class="code-panel active" id="touch-js">
+<pre class="code-block"><span class="keyword">const</span> area = document.<span class="function">getElementById</span>(<span class="string">'touch-area'</span>);
+
+<span class="comment">// touchstart — jari menyentuh layar</span>
+area.<span class="function">addEventListener</span>(<span class="string">'touchstart'</span>, <span class="keyword">function</span>(e) {
+  e.<span class="function">preventDefault</span>();
+  <span class="keyword">const</span> touch = e.<span class="attr">touches</span>[<span class="string">0</span>];  <span class="comment">// sentuhan pertama</span>
+  console.<span class="function">log</span>(<span class="string">`Sentuh di (${touch.clientX}, ${touch.clientY})`</span>);
+  console.<span class="function">log</span>(<span class="string">`Total jari: ${e.touches.length}`</span>);
+});
+
+<span class="comment">// touchmove — jari bergerak di layar</span>
+area.<span class="function">addEventListener</span>(<span class="string">'touchmove'</span>, <span class="keyword">function</span>(e) {
+  e.<span class="function">preventDefault</span>();
+  <span class="keyword">const</span> touch = e.<span class="attr">touches</span>[<span class="string">0</span>];
+  console.<span class="function">log</span>(<span class="string">`Geser ke (${touch.clientX}, ${touch.clientY})`</span>);
+});
+
+<span class="comment">// touchend — jari diangkat dari layar</span>
+area.<span class="function">addEventListener</span>(<span class="string">'touchend'</span>, <span class="keyword">function</span>(e) {
+  console.<span class="function">log</span>(<span class="string">`Jari dilepas, sisa: ${e.touches.length}`</span>);
+});
+
+<span class="comment">// touchcancel — sentuhan dibatalkan oleh sistem</span>
+area.<span class="function">addEventListener</span>(<span class="string">'touchcancel'</span>, () => {
+  console.<span class="function">log</span>(<span class="string">'Sentuhan dibatalkan'</span>);
+});</pre>
+        </div>
+      </div>
+
+      <h3>🔹 Area Sentuh</h3>
+      <p style="color:#888; font-size:0.85rem; margin-bottom:12px;">
+        Sentuh area ini (atau klik di desktop) untuk melihat efek touch event.
+      </p>
+
+      <div class="touch-area" id="touch-area">
+        <span id="touch-info">👆 Sentuh di sini!</span>
+      </div>
+
+      <button class="btn-clear" onclick="clearLog('log-touch')">Hapus Log</button>
+      <div class="log-box" id="log-touch"></div>
+    </section>
+
+
+    <!-- ==========================================
+         10. DRAG AND DROP EVENTS
+    =========================================== -->
+    <section class="section" id="section-dragdrop">
+      <h2>10. Drag and Drop Events <span class="badge">Lanjutan</span></h2>
+      <p class="description">
+        HTML5 Drag & Drop API: <code>dragstart</code>, <code>dragend</code>, <code>dragover</code>,
+        <code>dragenter</code>, <code>dragleave</code>, dan <code>drop</code>.
+      </p>
+
+      <!-- Sub-section A: Element Drag & Drop -->
+      <div class="sub-section">
+        <h3>🔹 10a. Seret Elemen Antar Zona (Kanban Board)</h3>
+
+        <div class="code-tab-container">
+          <div class="code-tabs">
+            <button class="code-tab active" onclick="switchTab(this, 'dragel-html')">HTML</button>
+            <button class="code-tab" onclick="switchTab(this, 'dragel-js')">JavaScript</button>
+          </div>
+          <div class="code-panel active" id="dragel-html">
+<pre class="code-block"><span class="comment">&lt;!-- Item harus punya atribut draggable="true" --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"drag-item"</span> <span class="attr">id</span>=<span class="string">"drag-1"</span> <span class="attr">draggable</span>=<span class="string">"true"</span><span class="tag">&gt;</span>
+  Belajar Event Handling
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="comment">&lt;!-- Zona drop target --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"drag-zone"</span> <span class="attr">id</span>=<span class="string">"zone-todo"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;h4&gt;</span>📋 To Do<span class="tag">&lt;/h4&gt;</span>
+<span class="tag">&lt;/div&gt;</span></pre>
+          </div>
+          <div class="code-panel" id="dragel-js">
+<pre class="code-block"><span class="keyword">const</span> item = document.<span class="function">getElementById</span>(<span class="string">'drag-1'</span>);
+<span class="keyword">const</span> zone = document.<span class="function">getElementById</span>(<span class="string">'zone-todo'</span>);
+
+<span class="comment">// dragstart — mulai menyeret</span>
+item.<span class="function">addEventListener</span>(<span class="string">'dragstart'</span>, <span class="keyword">function</span>(e) {
+  e.<span class="attr">dataTransfer</span>.<span class="function">setData</span>(<span class="string">'text/plain'</span>, <span class="keyword">this</span>.<span class="attr">id</span>);
+  e.<span class="attr">dataTransfer</span>.<span class="attr">effectAllowed</span> = <span class="string">'move'</span>;
+  <span class="keyword">this</span>.classList.<span class="function">add</span>(<span class="string">'dragging'</span>);
+});
+
+<span class="comment">// dragend — selesai menyeret</span>
+item.<span class="function">addEventListener</span>(<span class="string">'dragend'</span>, <span class="keyword">function</span>() {
+  <span class="keyword">this</span>.classList.<span class="function">remove</span>(<span class="string">'dragging'</span>);
+});
+
+<span class="comment">// dragover — WAJIB preventDefault agar drop bisa terjadi!</span>
+zone.<span class="function">addEventListener</span>(<span class="string">'dragover'</span>, <span class="keyword">function</span>(e) {
+  e.<span class="function">preventDefault</span>();  <span class="comment">// ← INI PENTING!</span>
+  e.<span class="attr">dataTransfer</span>.<span class="attr">dropEffect</span> = <span class="string">'move'</span>;
+});
+
+<span class="comment">// dragenter — item masuk zona drop</span>
+zone.<span class="function">addEventListener</span>(<span class="string">'dragenter'</span>, (e) => e.<span class="function">preventDefault</span>());
+
+<span class="comment">// dragleave — item keluar zona drop</span>
+zone.<span class="function">addEventListener</span>(<span class="string">'dragleave'</span>, () => console.<span class="function">log</span>(<span class="string">'Keluar zona'</span>));
+
+<span class="comment">// drop — item dijatuhkan di zona</span>
+zone.<span class="function">addEventListener</span>(<span class="string">'drop'</span>, <span class="keyword">function</span>(e) {
+  e.<span class="function">preventDefault</span>();
+  <span class="keyword">const</span> id = e.<span class="attr">dataTransfer</span>.<span class="function">getData</span>(<span class="string">'text/plain'</span>);
+  <span class="keyword">const</span> el = document.<span class="function">getElementById</span>(id);
+  <span class="keyword">this</span>.<span class="function">appendChild</span>(el);  <span class="comment">// pindahkan elemen</span>
+});</pre>
+          </div>
+        </div>
+
+        <p style="color:#888; font-size:0.85rem; margin:10px 0;">
+          Drag item dari zona kiri ke zona kanan, atau sebaliknya.
+        </p>
+
+        <div class="drag-container">
+          <div class="drag-zone" id="zone-todo">
+            <h4>📋 To Do</h4>
+            <div class="drag-item" id="drag-1" draggable="true">
+              <span class="drag-icon">☰</span> Belajar Event Handling
+            </div>
+            <div class="drag-item" id="drag-2" draggable="true">
+              <span class="drag-icon">☰</span> Latihan DOM Manipulation
+            </div>
+            <div class="drag-item" id="drag-3" draggable="true">
+              <span class="drag-icon">☰</span> Membuat Project JavaScript
+            </div>
+            <div class="drag-item" id="drag-4" draggable="true">
+              <span class="drag-icon">☰</span> Review Materi CSS
+            </div>
+          </div>
+
+          <div class="drag-zone" id="zone-progress">
+            <h4>🔄 In Progress</h4>
+          </div>
+
+          <div class="drag-zone" id="zone-done">
+            <h4>✅ Done</h4>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-section B: File Drag & Drop -->
+      <div class="sub-section">
+        <h3>🔹 10b. Drag & Drop File dari Komputer</h3>
+
+        <div class="code-tab-container">
+          <div class="code-tabs">
+            <button class="code-tab active" onclick="switchTab(this, 'dragfile-js')">JavaScript</button>
+          </div>
+          <div class="code-panel active" id="dragfile-js">
+<pre class="code-block"><span class="keyword">const</span> dropArea = document.<span class="function">getElementById</span>(<span class="string">'file-drop-area'</span>);
+
+<span class="comment">// Cegah default agar browser tidak membuka file</span>
+[<span class="string">'dragenter'</span>, <span class="string">'dragover'</span>, <span class="string">'dragleave'</span>, <span class="string">'drop'</span>].<span class="function">forEach</span>(evt => {
+  dropArea.<span class="function">addEventListener</span>(evt, (e) => e.<span class="function">preventDefault</span>());
+});
+
+<span class="comment">// Tampilkan highlight saat file di-hover</span>
+dropArea.<span class="function">addEventListener</span>(<span class="string">'dragenter'</span>, () => {
+  dropArea.classList.<span class="function">add</span>(<span class="string">'drag-over'</span>);
+});
+dropArea.<span class="function">addEventListener</span>(<span class="string">'dragleave'</span>, () => {
+  dropArea.classList.<span class="function">remove</span>(<span class="string">'drag-over'</span>);
+});
+
+<span class="comment">// drop — file dijatuhkan, baca datanya!</span>
+dropArea.<span class="function">addEventListener</span>(<span class="string">'drop'</span>, <span class="keyword">function</span>(e) {
+  <span class="keyword">const</span> files = e.<span class="attr">dataTransfer</span>.<span class="attr">files</span>;  <span class="comment">// FileList</span>
+
+  <span class="keyword">for</span> (<span class="keyword">const</span> file <span class="keyword">of</span> files) {
+    console.<span class="function">log</span>(<span class="string">`Nama: ${file.name}`</span>);
+    console.<span class="function">log</span>(<span class="string">`Tipe: ${file.type}`</span>);
+    console.<span class="function">log</span>(<span class="string">`Ukuran: ${file.size} bytes`</span>);
+
+    <span class="comment">// Preview gambar dengan FileReader</span>
+    <span class="keyword">if</span> (file.<span class="attr">type</span>.<span class="function">startsWith</span>(<span class="string">'image/'</span>)) {
+      <span class="keyword">const</span> reader = <span class="keyword">new</span> <span class="function">FileReader</span>();
+      reader.<span class="attr">onload</span> = (e) => {
+        <span class="keyword">const</span> img = document.<span class="function">createElement</span>(<span class="string">'img'</span>);
+        img.<span class="attr">src</span> = e.<span class="attr">target</span>.<span class="attr">result</span>;
+        document.body.<span class="function">appendChild</span>(img);
+      };
+      reader.<span class="function">readAsDataURL</span>(file);
+    }
+  }
+});</pre>
+          </div>
+        </div>
+
+        <p style="color:#888; font-size:0.85rem; margin:10px 0;">
+          Seret file dari komputer (Explorer/Finder) dan jatuhkan ke area di bawah ini. File gambar akan ditampilkan preview-nya!
+        </p>
+
+        <div class="file-drop-area" id="file-drop-area">
+          <div class="file-drop-icon">📁</div>
+          <div class="file-drop-text">Seret & lepas file di sini</div>
+          <div class="file-drop-subtext">atau klik untuk memilih file</div>
+          <input type="file" id="file-input-hidden" multiple style="display:none;">
+        </div>
+
+        <!-- File preview area -->
+        <div class="file-preview-list" id="file-preview-list"></div>
+      </div>
+
+      <button class="btn-clear" onclick="clearLog('log-dragdrop')">Hapus Log</button>
+      <div class="log-box" id="log-dragdrop"></div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>📘 <span>Event Handling Demo</span> — JavaScript Kelas XI | Tahun Ajaran 2026-2027</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+
+</body>
+</html>
