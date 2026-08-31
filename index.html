@@ -519,71 +519,90 @@ window.<span class="function">addEventListener</span>(<span class="string">'befo
          8. MEDIA EVENTS
     =========================================== -->
     <section class="section" id="section-media">
-      <h2>8. Media Events <span class="badge">Audio/Video</span></h2>
+      <h2>8. Media Events <span class="badge">Audio & YouTube</span></h2>
       <p class="description">
-        Event pada elemen <code>&lt;audio&gt;</code> dan <code>&lt;video&gt;</code>:
-        <code>play</code>, <code>pause</code>, <code>ended</code>, <code>timeupdate</code>,
-        <code>volumechange</code>, <code>seeking</code>, <code>seeked</code>, <code>loadeddata</code>.
+        Demonstrasi perbandingan menggunakan Event HTML5 bawaan (untuk elemen lokal) 
+        dan YouTube IFrame API (untuk video dari platform luar).
       </p>
 
-      <div class="code-tab-container">
-        <div class="code-tabs">
-          <button class="code-tab active" onclick="switchTab(this, 'media-js')">JavaScript</button>
-        </div>
-        <div class="code-panel active" id="media-js">
-<pre class="code-block"><span class="keyword">const</span> audio = document.<span class="function">getElementById</span>(<span class="string">'media-player'</span>);
+      <!-- Sub-section 8a: HTML5 Audio -->
+      <div class="sub-section">
+        <h3>🔹 8a. HTML5 Audio (Native Events)</h3>
+        
+        <div class="code-tab-container">
+          <div class="code-tabs">
+            <button class="code-tab active" onclick="switchTab(this, 'media-audio-js')">JavaScript</button>
+          </div>
+          <div class="code-panel active" id="media-audio-js">
+<pre class="code-block"><span class="keyword">const</span> audio = document.<span class="function">getElementById</span>(<span class="string">'audio-player'</span>);
 
-<span class="comment">// play — media mulai diputar</span>
-audio.<span class="function">addEventListener</span>(<span class="string">'play'</span>, () => console.<span class="function">log</span>(<span class="string">'▶ Playing'</span>));
+<span class="comment">// HTML5 memiliki event bawaan yang bisa langsung di-listen</span>
+audio.<span class="function">addEventListener</span>(<span class="string">'play'</span>, () => console.<span class="function">log</span>(<span class="string">'Mulai'</span>));
+audio.<span class="function">addEventListener</span>(<span class="string">'pause'</span>, () => console.<span class="function">log</span>(<span class="string">'Jeda'</span>));
+audio.<span class="function">addEventListener</span>(<span class="string">'ended'</span>, () => console.<span class="function">log</span>(<span class="string">'Selesai'</span>));
 
-<span class="comment">// pause — media dijeda</span>
-audio.<span class="function">addEventListener</span>(<span class="string">'pause'</span>, () => console.<span class="function">log</span>(<span class="string">'⏸ Paused'</span>));
-
-<span class="comment">// ended — media selesai diputar</span>
-audio.<span class="function">addEventListener</span>(<span class="string">'ended'</span>, () => console.<span class="function">log</span>(<span class="string">'⏹ Selesai'</span>));
-
-<span class="comment">// timeupdate — posisi waktu berubah (sering!)</span>
+<span class="comment">// timeupdate dipicu otomatis berkali-kali saat media diputar</span>
 audio.<span class="function">addEventListener</span>(<span class="string">'timeupdate'</span>, <span class="keyword">function</span>() {
-  console.<span class="function">log</span>(<span class="string">`Waktu: ${this.currentTime.toFixed(1)}s`</span>);
-});
-
-<span class="comment">// volumechange — volume berubah</span>
-audio.<span class="function">addEventListener</span>(<span class="string">'volumechange'</span>, <span class="keyword">function</span>() {
-  console.<span class="function">log</span>(<span class="string">`Volume: ${Math.round(this.volume * 100)}%`</span>);
-});
-
-<span class="comment">// loadeddata — data media siap</span>
-audio.<span class="function">addEventListener</span>(<span class="string">'loadeddata'</span>, <span class="keyword">function</span>() {
-  console.<span class="function">log</span>(<span class="string">`Durasi: ${this.duration.toFixed(1)}s`</span>);
-});
-
-<span class="comment">// seeking / seeked — user menggeser timeline</span>
-audio.<span class="function">addEventListener</span>(<span class="string">'seeking'</span>, () => console.<span class="function">log</span>(<span class="string">'Mencari...'</span>));
-audio.<span class="function">addEventListener</span>(<span class="string">'seeked'</span>, () => console.<span class="function">log</span>(<span class="string">'Posisi ditemukan'</span>));</pre>
+  console.<span class="function">log</span>(<span class="string">`Waktu: ${this.currentTime}s`</span>);
+});</pre>
+          </div>
         </div>
+
+        <div class="media-player-wrapper">
+          <audio id="audio-player" controls>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+            Browser Anda tidak mendukung elemen audio.
+          </audio>
+          <div class="media-status">
+            <span>Status: <strong id="audio-status">⏹ Idle</strong></span>
+            <span>Waktu: <strong id="audio-time">0.0s</strong></span>
+          </div>
+        </div>
+
+        <button class="btn-clear" onclick="clearLog('log-media-audio')">Hapus Log</button>
+        <div class="log-box" id="log-media-audio"></div>
       </div>
 
-      <h3>🔹 Audio Player Demo</h3>
-      <p style="color:#888; font-size:0.85rem; margin-bottom:12px;">
-        Gunakan kontrol player untuk memicu berbagai media event.
-      </p>
+      <!-- Sub-section 8b: YouTube API -->
+      <div class="sub-section">
+        <h3>🔹 8b. YouTube Video (IFrame API)</h3>
+        
+        <div class="code-tab-container">
+          <div class="code-tabs">
+            <button class="code-tab active" onclick="switchTab(this, 'media-yt-js')">JavaScript</button>
+          </div>
+          <div class="code-panel active" id="media-yt-js">
+<pre class="code-block"><span class="comment">// YouTube API menggunakan callback function, BUKAN addEventListener</span>
+window.<span class="function">onYouTubeIframeAPIReady</span> = <span class="keyword">function</span>() {
+  <span class="keyword">new</span> YT.<span class="function">Player</span>(<span class="string">'youtube-player'</span>, {
+    <span class="attr">videoId</span>: <span class="string">'H3sDc6_8nAc'</span>,
+    <span class="attr">events</span>: { <span class="string">'onStateChange'</span>: onPlayerStateChange }
+  });
+};
 
-      <div class="media-player-wrapper">
-        <audio id="media-player" controls>
-          <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-          Browser Anda tidak mendukung element audio.
-        </audio>
-
-        <div class="media-status">
-          <span>Status: <strong id="media-status">⏹ Idle</strong></span>
-          <span>Waktu: <strong id="media-time">0.0s</strong></span>
-          <span>Durasi: <strong id="media-duration">—</strong></span>
-          <span>Volume: <strong id="media-volume">100%</strong></span>
+<span class="keyword">function</span> <span class="function">onPlayerStateChange</span>(event) {
+  <span class="keyword">if</span> (event.<span class="attr">data</span> == YT.PlayerState.<span class="attr">PLAYING</span>) {
+    console.<span class="function">log</span>(<span class="string">'YouTube Play'</span>);
+    <span class="comment">// Tidak ada event timeupdate, harus bikin manual pakai setInterval</span>
+  } <span class="keyword">else if</span> (event.<span class="attr">data</span> == YT.PlayerState.<span class="attr">PAUSED</span>) {
+    console.<span class="function">log</span>(<span class="string">'YouTube Pause'</span>);
+  }
+}</pre>
+          </div>
         </div>
+
+        <div class="media-player-wrapper">
+          <div id="youtube-player"></div>
+          <div class="media-status">
+            <span>Status: <strong id="yt-status">⏹ Idle</strong></span>
+            <span>Waktu: <strong id="yt-time">0.0s</strong></span>
+          </div>
+        </div>
+
+        <button class="btn-clear" onclick="clearLog('log-media-yt')">Hapus Log</button>
+        <div class="log-box" id="log-media-yt"></div>
       </div>
 
-      <button class="btn-clear" onclick="clearLog('log-media')">Hapus Log</button>
-      <div class="log-box" id="log-media"></div>
     </section>
 
 

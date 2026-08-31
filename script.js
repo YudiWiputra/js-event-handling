@@ -419,72 +419,86 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   // ==============================================
-  // 8. MEDIA EVENTS
+  // 8. MEDIA EVENTS (Audio & YouTube)
   // ==============================================
 
-  const mediaPlayer = document.getElementById('media-player');
-  const mediaStatus = document.getElementById('media-status');
-  const mediaTime = document.getElementById('media-time');
-  const mediaDuration = document.getElementById('media-duration');
-  const mediaVolume = document.getElementById('media-volume');
+  // --- 8a. HTML5 Audio ---
+  const audioPlayer = document.getElementById('audio-player');
+  const audioStatus = document.getElementById('audio-status');
+  const audioTime = document.getElementById('audio-time');
 
-  if (mediaPlayer) {
-    // play
-    mediaPlayer.addEventListener('play', function () {
-      mediaStatus.textContent = '▶ Playing';
-      addLog('log-media', 'play', 'Media mulai diputar');
+  if (audioPlayer) {
+    audioPlayer.addEventListener('play', function () {
+      audioStatus.textContent = '▶ Playing';
+      addLog('log-media-audio', 'play', 'Audio mulai diputar (HTML5 Event)');
     });
 
-    // pause
-    mediaPlayer.addEventListener('pause', function () {
-      mediaStatus.textContent = '⏸ Paused';
-      addLog('log-media', 'pause', 'Media dijeda');
+    audioPlayer.addEventListener('pause', function () {
+      audioStatus.textContent = '⏸ Paused';
+      addLog('log-media-audio', 'pause', 'Audio dijeda (HTML5 Event)');
     });
 
-    // ended
-    mediaPlayer.addEventListener('ended', function () {
-      mediaStatus.textContent = '⏹ Ended';
-      addLog('log-media', 'ended', 'Media selesai diputar');
+    audioPlayer.addEventListener('ended', function () {
+      audioStatus.textContent = '⏹ Ended';
+      addLog('log-media-audio', 'ended', 'Audio selesai (HTML5 Event)');
     });
 
-    // timeupdate
-    mediaPlayer.addEventListener('timeupdate', function () {
-      const current = this.currentTime.toFixed(1);
-      const duration = this.duration ? this.duration.toFixed(1) : '0.0';
-      mediaTime.textContent = `${current}s / ${duration}s`;
+    audioPlayer.addEventListener('timeupdate', function () {
+      audioTime.textContent = this.currentTime.toFixed(1) + 's';
     });
+  }
 
-    // volumechange
-    mediaPlayer.addEventListener('volumechange', function () {
-      mediaVolume.textContent = Math.round(this.volume * 100) + '%';
-      addLog('log-media', 'volumechange', `Volume: ${Math.round(this.volume * 100)}%${this.muted ? ' (MUTED)' : ''}`);
-    });
+  // --- 8b. YouTube IFrame API ---
+  const ytStatus = document.getElementById('yt-status');
+  const ytTime = document.getElementById('yt-time');
 
-    // loadeddata
-    mediaPlayer.addEventListener('loadeddata', function () {
-      mediaDuration.textContent = this.duration.toFixed(1) + 's';
-      addLog('log-media', 'loadeddata', `Data media dimuat. Durasi: ${this.duration.toFixed(1)}s`);
-    });
+  // Load YouTube IFrame API Script secara dinamis
+  const ytScriptTag = document.createElement('script');
+  ytScriptTag.src = "https://www.youtube.com/iframe_api";
+  const firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(ytScriptTag, firstScriptTag);
 
-    // seeking & seeked
-    mediaPlayer.addEventListener('seeking', function () {
-      addLog('log-media', 'seeking', `Mencari posisi: ${this.currentTime.toFixed(1)}s`);
-    });
+  let ytPlayer;
+  let ytTimeUpdater;
 
-    mediaPlayer.addEventListener('seeked', function () {
-      addLog('log-media', 'seeked', `Posisi ditemukan: ${this.currentTime.toFixed(1)}s`);
+  // Fungsi global ini dipanggil otomatis oleh API YouTube
+  window.onYouTubeIframeAPIReady = function() {
+    ytPlayer = new YT.Player('youtube-player', {
+      height: '315',
+      width: '100%',
+      videoId: 'H3sDc6_8nAc', 
+      playerVars: { 'rel': 0 },
+      events: {
+        'onReady': function() {
+          addLog('log-media-yt', 'onReady', 'API YouTube siap! (Callback Event)');
+        },
+        'onStateChange': onPlayerStateChange
+      }
     });
+  };
 
-    // error
-    mediaPlayer.addEventListener('error', function () {
-      mediaStatus.textContent = '❌ Error';
-      addLog('log-media', 'error', 'Terjadi error saat memuat media');
-    });
+  function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING) {
+      ytStatus.textContent = '▶ Playing';
+      addLog('log-media-yt', 'onStateChange', 'Status: PLAYING (YouTube Event)');
+      
+      // Menggantikan event timeupdate
+      ytTimeUpdater = setInterval(() => {
+        if (ytPlayer && ytPlayer.getCurrentTime) {
+          ytTime.textContent = ytPlayer.getCurrentTime().toFixed(1) + 's';
+        }
+      }, 500); 
 
-    // canplay
-    mediaPlayer.addEventListener('canplay', function () {
-      addLog('log-media', 'canplay', 'Media siap untuk diputar');
-    });
+    } else if (event.data == YT.PlayerState.PAUSED) {
+      ytStatus.textContent = '⏸ Paused';
+      addLog('log-media-yt', 'onStateChange', 'Status: PAUSED (YouTube Event)');
+      clearInterval(ytTimeUpdater);
+      
+    } else if (event.data == YT.PlayerState.ENDED) {
+      ytStatus.textContent = '⏹ Ended';
+      addLog('log-media-yt', 'onStateChange', 'Status: ENDED (YouTube Event)');
+      clearInterval(ytTimeUpdater);
+    }
   }
 
 
